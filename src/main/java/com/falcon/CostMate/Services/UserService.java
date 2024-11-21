@@ -1,4 +1,4 @@
-package com.falcon.CostMate.Services;
+/*package com.falcon.CostMate.Services;
 
 import com.falcon.CostMate.Entity.AppUser;
 import com.falcon.CostMate.Repositories.UserRepository;
@@ -85,3 +85,4 @@ public class UserService implements UserDetailsService {
         return authorities;
     }
 }
+*/

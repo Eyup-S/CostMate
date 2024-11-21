@@ -85,7 +85,7 @@ public class SecurityConfig {
                 .formLogin(form -> form.disable()) // Disable form login
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/register", "/api/v1/auth/login").permitAll() // Public access for registration and login
-                        .requestMatchers("/api/v1/items/**").authenticated() // Authenticated access for item-related endpoints
+                        .requestMatchers("/api/v1/app/**").authenticated() // Authenticated access for item-related endpoints
                         .anyRequest().authenticated() // All other requests require authentication
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // Stateless sessions for APIs

@@ -36,14 +36,16 @@ public class LoginService implements UserDetailsService {
     @Autowired
     private JwtUtil jwtUtil;
 
-    // Registration Method
+    // Registration
     public ResponseEntity<String> register(AppUser user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             return new ResponseEntity<>("Username already taken!", HttpStatus.BAD_REQUEST);
         }
-
         // Encrypt password before saving
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.getRoles().add("ROLE_USER");
+        System.out.println("User being saved: " + user);
+
         userRepository.save(user);
         return new ResponseEntity<>("Registration successful!", HttpStatus.OK);
     }
@@ -68,8 +70,8 @@ public class LoginService implements UserDetailsService {
 
     // UserDetailsService Implementation for Spring Security
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<AppUser> optionalUser = userRepository.findByUsername(username);
+    public AppUser loadUserByUsername(String username) throws UsernameNotFoundException {
+        /*Optional<AppUser> optionalUser = userRepository.findByUsername(username);
         if (optionalUser.isPresent()) {
             AppUser appUser = optionalUser.get();
             return new User(
@@ -83,7 +85,9 @@ public class LoginService implements UserDetailsService {
             );
         } else {
             throw new UsernameNotFoundException("User not found with username: " + username);
-        }
+        }*/
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
     }
 
     // Helper method to parse roles to Spring Security authorities
@@ -95,4 +99,4 @@ public class LoginService implements UserDetailsService {
         return authorities;
     }
 }
-*/
+

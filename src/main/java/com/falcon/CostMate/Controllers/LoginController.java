@@ -1,7 +1,6 @@
 package com.falcon.CostMate.Controllers;
 
 import com.falcon.CostMate.Services.LoginService;
-import com.falcon.CostMate.Services.UserService;
 import com.falcon.CostMate.utils.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -41,8 +40,8 @@ public class LoginController {
             token = token.substring(7); // Remove "Bearer " prefix
             String username = jwtUtil.extractUsername(token);
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            if (jwtUtil.validateToken(token, userDetails)) {
+            AppUser userDetails = loginService.loadUserByUsername(username);
+            if (jwtUtil.isTokenValid(token, userDetails.getUsername())) {
                 return ResponseEntity.ok("Valid token");
             } else {
                 return ResponseEntity.status(401).body("Invalid token");
