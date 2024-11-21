@@ -1,9 +1,12 @@
-/*
-package com.falcon.sharedShoppingList.Services;
+package com.falcon.CostMate.Services;
 
-import com.falcon.sharedShoppingList.Entity.AppUser;
-import com.falcon.sharedShoppingList.Repositories.UserRepository;
+import com.falcon.CostMate.Entity.AppUser;
+import com.falcon.CostMate.Repositories.UserRepository;
+import com.falcon.CostMate.utils.JwtUtil;
+
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
@@ -30,6 +33,8 @@ public class LoginService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final HttpServletRequest req;
+    @Autowired
+    private JwtUtil jwtUtil;
 
     // Registration Method
     public ResponseEntity<String> register(AppUser user) {
@@ -43,16 +48,16 @@ public class LoginService implements UserDetailsService {
         return new ResponseEntity<>("Registration successful!", HttpStatus.OK);
     }
 
-    // Custom login method
+
     public ResponseEntity<String> login(AppUser user) {
         Optional<AppUser> optionalUser = userRepository.findByUsername(user.getUsername());
         if (optionalUser.isPresent()) {
             AppUser dbUser = optionalUser.get();
-            // Validate the password using PasswordEncoder (BCrypt matching)
+            // Validate the password
             if (passwordEncoder.matches(user.getPassword(), dbUser.getPassword())) {
-                dbUser.setPassword(null);  // Hide password when storing in session
-                req.getSession().setAttribute("customer", dbUser);
-                return new ResponseEntity<>("Login successful!", HttpStatus.OK);
+                // Generate JWT token
+                String token = jwtUtil.generateToken(dbUser.getUsername());
+                return new ResponseEntity<>(token, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>("Wrong password!", HttpStatus.UNAUTHORIZED);
             }
