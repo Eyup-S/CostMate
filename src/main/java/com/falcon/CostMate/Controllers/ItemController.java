@@ -1,7 +1,7 @@
 package com.falcon.CostMate.Controllers;
 
 
-import com.falcon.CostMate.Entity.Item;
+import com.falcon.CostMate.Entity.TransactionItem;
 import com.falcon.CostMate.Services.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -16,12 +16,12 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping("/items/{category}")
-    public List<Item> getItems(@PathVariable String category){
+    public List<TransactionItem> getItems(@PathVariable String category){
         return itemService.getItems(category);
     }
 
     @PostMapping("/items")
-    public String addItem(@RequestBody Item item){
+    public String addItem(@RequestBody TransactionItem item){
         return itemService.addItem(item);
     }
 

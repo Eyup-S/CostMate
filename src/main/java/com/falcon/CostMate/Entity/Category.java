@@ -21,5 +21,5 @@ public class Category {
     private String categoryName;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Item> items;
+    private List<TransactionItem> items;
 }

@@ -29,10 +29,10 @@
         private String password;
 
         @OneToMany(mappedBy = "addedBy", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-        private List<Item> addedItems;
+        private List<TransactionItem> addedItems;
 
         @ManyToMany(mappedBy = "paidBy", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-        private List<Item> paidItems;
+        private List<TransactionItem> paidItems;
 
 
     }

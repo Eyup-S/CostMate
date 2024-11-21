@@ -1,6 +1,6 @@
 package com.falcon.CostMate.Services;
 
-import com.falcon.CostMate.Entity.Item;
+import com.falcon.CostMate.Entity.TransactionItem;
 import com.falcon.CostMate.Repositories.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,11 +14,11 @@ public class ItemService {
 
     private final ItemRepository itemRepository;
 
-    public List<Item> getItems(String category){
+    public List<TransactionItem> getItems(String category){
         return itemRepository.findAll();
     }
 
-    public String addItem(Item item){
+    public String addItem(TransactionItem item){
         try {
             itemRepository.save(item);
         } catch (Exception e){
@@ -27,11 +27,11 @@ public class ItemService {
         return "Item added: " + item;
     }
 
-    public String deleteItem(Item item){
+    public String deleteItem(TransactionItem item){
         return "Item deleted: " + item;
     }
 
-    public String updateItem(Item item){
+    public String updateItem(TransactionItem item){
         try {
             return "updated";
         }
