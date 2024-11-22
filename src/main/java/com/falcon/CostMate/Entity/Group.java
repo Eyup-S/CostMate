@@ -19,7 +19,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "Groups")
-public class Groups {
+public class Group {
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

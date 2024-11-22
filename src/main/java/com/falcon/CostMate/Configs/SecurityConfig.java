@@ -80,8 +80,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .httpBasic(Customizer.withDefaults()) // Use HTTP Basic Authentication
-                .csrf(csrf -> csrf.disable()) // Explicitly disable CSRF for stateless APIs
+                .httpBasic(Customizer.withDefaults())
+                .csrf(csrf -> csrf.disable()) 
                 .formLogin(form -> form.disable()) // Disable form login
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/register", "/api/v1/auth/login").permitAll() // Public access for registration and login
