@@ -3,8 +3,10 @@ package com.falcon.CostMate.Entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -20,7 +22,8 @@ public class TransactionItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long iid;
-
+    
+    @NonNull
     private String name;
 
     @ManyToOne
@@ -42,10 +45,10 @@ public class TransactionItem {
     private Set<AppUser> paidBy;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date  addedDate;
+    private LocalDateTime  addedDate;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date  boughtDate;
+    private LocalDateTime  boughtDate;
 
     private Double price;
 

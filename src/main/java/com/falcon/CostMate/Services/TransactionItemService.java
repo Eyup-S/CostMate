@@ -14,10 +14,34 @@ public class TransactionItemService {
 
     private final TransactionItemRepository itemRepository;
 
-    public List<TransactionItem> getItems(String category){
-        return itemRepository.findAll();
+    public List<TransactionItem> getItemsByCategory(String category){
+        List<TransactionItem> items = itemRepository.findByCategory(category).get();
+    	if(!items.isEmpty()) {
+    		return items;    		
+    	}
+    	else {
+    		throw new RuntimeException("Items not found");
+    	}
     }
-
+    
+    public List<TransactionItem> getAllItems(){
+    	List<TransactionItem> items = itemRepository.findAll();
+    	if(!items.isEmpty()) {
+    		return items;
+    	}
+    	throw new RuntimeException("Items not found");
+    }
+    
+    public List<TransactionItem> getItemsByYearAndMonth(int month, int year){
+    	List<TransactionItem> items = itemRepository.findByMonthAndYear(month, year);
+    	if(!items.isEmpty()) {
+    		return items;
+    	}
+    	throw new RuntimeException("Items not found");
+    }
+    
+    
+    
     public String addItem(TransactionItem item){
         try {
             itemRepository.save(item);

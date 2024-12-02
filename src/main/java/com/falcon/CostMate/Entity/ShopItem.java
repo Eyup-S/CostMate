@@ -29,7 +29,7 @@ public class ShopItem {
 	private Long sid;
 	
 	
-	private AppUser name;
+	private String name;
 	
 	private String amount;
 	
