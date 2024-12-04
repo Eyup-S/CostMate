@@ -17,8 +17,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @Entity
 @Data
-@Getter
-@Setter
 @Table(name = "app_user")
 public class AppUser implements UserDetails {
 
@@ -26,6 +24,8 @@ public class AppUser implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long uid;
 
+    @Getter
+    @Setter
     @NotNull
     @NotEmpty
     private String username;
@@ -42,6 +42,7 @@ public class AppUser implements UserDetails {
 
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -70,4 +71,16 @@ public class AppUser implements UserDetails {
     public boolean isEnabled() {
         return true; // Modify if you want to track whether the user is enabled
     }
+
+    @Override
+    public String getUsername() {
+        return username;
     }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+
+}

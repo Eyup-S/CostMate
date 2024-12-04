@@ -4,27 +4,22 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.falcon.CostMate.Entity.AppUser;
 import com.falcon.CostMate.Entity.Group;
 import com.falcon.CostMate.Services.GroupService;
 
-import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("app/groups")
+@RequestMapping("/api/v1/app/groups")
 class GroupController{
 	
-	private GroupService groupService;
+	private final GroupService groupService;
 	
-	@GetMapping("")
+	@GetMapping("/")
 	public ResponseEntity<List<Group>> getAllGroups(){
 		List<Group> groups = groupService.getAllGroups();
 	    if (groups.isEmpty()) {
@@ -33,15 +28,15 @@ class GroupController{
 	    return ResponseEntity.ok(groups); 
 	}
 	
-	@PostMapping("")
-	public ResponseEntity<?> createGroup(@RequestBody AppUser user){
-		groupService.createGroup(user);
-		
-		
+	@PostMapping("/{groupName}")
+	public ResponseEntity<?> createGroup(@RequestBody AppUser user, @PathVariable("groupName") String groupName){
+		System.out.println("groupname: " + groupName);
+		Group group = groupService.createGroup(user, groupName);
+		return ResponseEntity.ok(group);
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<Optional<Group>> getGroupById(@PathParam("id") String id){
+	public ResponseEntity<Optional<Group>> getGroupById(@PathVariable("id") String id){
 		Optional<Group> group = groupService.getGroupByID(id);
 		if(group.isEmpty()) {
 			return ResponseEntity.noContent().build();
@@ -50,7 +45,7 @@ class GroupController{
 	}
 	
 	@GetMapping("/{id}/users")
-	public ResponseEntity<List<AppUser>> getUsersOfGroup(@PathParam("id") String id){
+	public ResponseEntity<List<AppUser>> getUsersOfGroup(@PathVariable("id") String id){
 		try {			
 			List<AppUser> users = groupService.getUsersOfGroup(id);
 			if(users.isEmpty()) {
@@ -64,7 +59,7 @@ class GroupController{
 	}
 	
 	@PostMapping("/{id}/users")
-	public ResponseEntity<?> addUserToGroup(@PathParam("id") String id, @RequestBody AppUser user){
+	public ResponseEntity<?> addUserToGroup(@PathVariable("id") String id, @RequestBody AppUser user){
 		try{
 			Group group = groupService.addUserToGroup(id, user);
 			return ResponseEntity.ok(group);
@@ -75,7 +70,7 @@ class GroupController{
 	}
 	
 	@GetMapping("{id}/users/requests")
-	public ResponseEntity<List<AppUser>> getJoinRequests(@PathParam("id") String id){
+	public ResponseEntity<List<AppUser>> getJoinRequests(@PathVariable("id") String id){
 		try {			
 			List<AppUser> users = groupService.getJoinRequests(id);
 			if(users.isEmpty()) {
@@ -89,7 +84,7 @@ class GroupController{
 	}
 	
 	 @PostMapping("{id}/users/requests/approve")
-	 public ResponseEntity<?> approveRequest(@PathParam("id") String id,@RequestBody AppUser user ){
+	 public ResponseEntity<?> approveRequest(@PathVariable("id") String id,@RequestBody AppUser user ){
 		 try{
 				Group group = groupService.approveRequest(id, user);
 				return ResponseEntity.ok(group);
@@ -100,7 +95,7 @@ class GroupController{
 	 }
 	 
 	 @PostMapping("{id}/users/requests/reject")
-	 public ResponseEntity<?> rejectRequest(@PathParam("id") String id,@RequestBody AppUser user ){
+	 public ResponseEntity<?> rejectRequest(@PathVariable("id") String id,@RequestBody AppUser user ){
 		 try {
 			Group group = groupService.approveRequest(id,user);
 			return ResponseEntity.ok(group);
@@ -113,7 +108,7 @@ class GroupController{
 	
 	
 	@PostMapping("{id}/join")
-	public ResponseEntity<?> joinToGroup(@PathParam("id") String id, @RequestBody AppUser user ){
+	public ResponseEntity<?> joinToGroup(@PathVariable("id") String id, @RequestBody AppUser user ){
 		try{
 			Group group = groupService.joinToGroup(id, user);
 			return ResponseEntity.ok(group);
@@ -124,7 +119,7 @@ class GroupController{
 	}
 	
 	@PostMapping("{id}/quit")
-	public ResponseEntity<?> quitFromGroup(@PathParam("id") String id, @RequestBody AppUser user ){
+	public ResponseEntity<?> quitFromGroup(@PathVariable("id") String id, @RequestBody AppUser user ){
 		try{
 			Group group = groupService.quitFromGroup(id, user);
 			return ResponseEntity.ok(group);

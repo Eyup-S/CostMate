@@ -1,8 +1,8 @@
 package com.falcon.CostMate.Services;
 
 import com.falcon.CostMate.Entity.AppUser;
-import com.falcon.CostMate.Repositories.UserRepository;
-import com.falcon.CostMate.utils.JwtUtil;
+import com.falcon.CostMate.Repositories.AppUserRepository;
+//import com.falcon.CostMate.utils.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,24 +24,22 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class LoginService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final AppUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final HttpServletRequest req;
-    @Autowired
-    private JwtUtil jwtUtil;
+    //private final JwtUtil jwtUtil;
 
     // Registration
     public ResponseEntity<String> register(AppUser user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             return new ResponseEntity<>("Username already taken!", HttpStatus.BAD_REQUEST);
         }
-        // Encrypt password before saving
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.getRoles().add("ROLE_USER");
         System.out.println("User being saved: " + user);
@@ -53,50 +51,41 @@ public class LoginService implements UserDetailsService {
 
     public ResponseEntity<String> login(AppUser user) {
         Optional<AppUser> optionalUser = userRepository.findByUsername(user.getUsername());
-        if (optionalUser.isPresent()) {
-            AppUser dbUser = optionalUser.get();
-            // Validate the password
-            if (passwordEncoder.matches(user.getPassword(), dbUser.getPassword())) {
-                // Generate JWT token
-                String token = jwtUtil.generateToken(dbUser.getUsername());
-                return new ResponseEntity<>(token, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>("Wrong password!", HttpStatus.UNAUTHORIZED);
-            }
-        } else {
+        if (optionalUser.isEmpty()) {
             return new ResponseEntity<>("User Not Found!", HttpStatus.NOT_FOUND);
         }
+
+        AppUser dbUser = optionalUser.get();
+        if (!passwordEncoder.matches(user.getPassword(), dbUser.getPassword())) {
+            return new ResponseEntity<>("Wrong password!", HttpStatus.UNAUTHORIZED);
+        }
+
+        //String token = jwtUtil.generateToken(dbUser.getUsername());
+        //return ResponseEntity.ok().body(token);
+        return ResponseEntity.ok().body(user.getUsername());
     }
 
     // UserDetailsService Implementation for Spring Security
     @Override
     public AppUser loadUserByUsername(String username) throws UsernameNotFoundException {
-        /*Optional<AppUser> optionalUser = userRepository.findByUsername(username);
-        if (optionalUser.isPresent()) {
-            AppUser appUser = optionalUser.get();
-            return new User(
-                    appUser.getUsername(),
-                    appUser.getPassword(),
-                    true,  // Account is enabled
-                    true,  // Account is not expired
-                    true,  // Credentials are not expired
-                    true,  // Account is not locked
-                    new ArrayList<>()
-            );
-        } else {
-            throw new UsernameNotFoundException("User not found with username: " + username);
-        }*/
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
     }
 
     // Helper method to parse roles to Spring Security authorities
+    /*
     private Collection<? extends GrantedAuthority> getAuthorities(List<String> roles) {
         List<GrantedAuthority> authorities = new ArrayList<>();
         for (String role : roles) {
             authorities.add(new SimpleGrantedAuthority(role));
         }
         return authorities;
+    }*/
+
+    private Collection<? extends GrantedAuthority> getAuthorities(List<String> roles) {
+        return roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
 }
 

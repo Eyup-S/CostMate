@@ -1,17 +1,12 @@
 package com.falcon.CostMate.Entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 @Entity
@@ -24,6 +19,9 @@ public class Group {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long gid;
+
+	@NonNull
+	private String groupName;
 	
 	@ManyToMany
     @JoinTable(
@@ -40,7 +38,21 @@ public class Group {
 	    inverseJoinColumns = @JoinColumn(name = "uid")
     )
     private List<AppUser> groupMembershipRequests;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "admin_user", nullable = false)
 	private AppUser adminUser;
-	
+
+	public Group() {
+
+		this.groupMembers = new ArrayList<>();
+		this.groupMembershipRequests = new ArrayList<>();
+	}
+
+	public Group(@NonNull String groupName) {
+		this();
+		this.groupName = groupName;
+	}
+
+
 }
