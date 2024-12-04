@@ -3,12 +3,15 @@ package com.falcon.CostMate.Controllers;
 
 import com.falcon.CostMate.Entity.TransactionItem;
 import com.falcon.CostMate.Services.TransactionItemService;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/splitApp")
@@ -50,9 +53,67 @@ public class TransactionItemController {
     }
 
     @PostMapping("/items")
-    public String addItem(@RequestBody TransactionItem item){
-        return itemService.addItem(item);
+    public ResponseEntity<TransactionItem> addItem(@Valid @RequestBody TransactionItem item){
+        return ResponseEntity.ok(itemService.addItem(item));
     }
-
+    
+    @PutMapping("/items/{id}")
+    public ResponseEntity<TransactionItem> updateTransactionItem(@PathVariable("id") Long id, @RequestBody TransactionItem transactionItem) {
+        try {
+        	return ResponseEntity.ok(itemService.updateItem(id, transactionItem));
+        }
+        catch(Exception e) {
+        	return ResponseEntity.notFound().build();
+        }
+    }
+    
+    @DeleteMapping("/items/{id}")
+    public ResponseEntity<Long> deleteTransactionItem(@PathVariable Long id) {
+        if(itemService.deleteItem(id)) {
+        	return ResponseEntity.ok(id);
+        }
+        else {
+        	return ResponseEntity.notFound().build();
+        }
+    }
+    
+    @GetMapping("/items/grouped-by-category")
+    public ResponseEntity<Map<String, List<TransactionItem>>> getItemsGroupedByCategory() {
+        try {
+            return ResponseEntity.ok(itemService.getItemsGroupedByCategory());
+        } catch (Exception e) {
+            return ResponseEntity.noContent().build();
+        }
+    }
+    
+    @GetMapping("/items/shared-with/{userId}")
+    public ResponseEntity<List<TransactionItem>> getItemsSharedWithUser(@PathVariable("userId") Long userId) {
+        try {
+            return ResponseEntity.ok(itemService.getItemsSharedWithUser(userId));
+        } catch (Exception e) {
+            return ResponseEntity.noContent().build();
+        }
+    }
+    
+    @GetMapping("/items/paid-by/{userId}")
+    public ResponseEntity<List<TransactionItem>> getItemsPaidByUser(@PathVariable("userId") Long userId) {
+        try {
+            return ResponseEntity.ok(itemService.getItemsPaidByUser(userId));
+        } catch (Exception e) {
+            return ResponseEntity.noContent().build();
+        }
+    }
+    
+    @PatchMapping("/items/{id}/toggle-status")
+    public ResponseEntity<TransactionItem> toggleStatus(@PathVariable("id") Long id) {
+        try {
+            return ResponseEntity.ok(itemService.toggleStatus(id));
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    
+    
+    
 
 }
