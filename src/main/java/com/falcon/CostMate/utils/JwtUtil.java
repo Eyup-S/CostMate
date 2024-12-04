@@ -1,8 +1,9 @@
-package com.falcon.CostMate.utils;
+/*package com.falcon.CostMate.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -10,9 +11,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
+@RequiredArgsConstructor
 public class JwtUtil {
 
-    private final String SECRET_KEY = "celiktepe_trio";
+    private final String SECRET_KEY;
+
+    public JwtUtil(){
+        SECRET_KEY = "celiktepe_trio";
+    }
 
     public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
@@ -48,3 +54,4 @@ public class JwtUtil {
 
 }
 
+*/
