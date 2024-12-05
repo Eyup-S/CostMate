@@ -49,23 +49,25 @@ public class SecurityConfig {
     }
 }
 */
-import org.springframework.beans.factory.annotation.Autowired;
+//import com.falcon.CostMate.filters.JwtRequestFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    //private final JwtRequestFilter jwtRequestFilter; // Still used, but not in a direct dependency loop
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -80,15 +82,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .httpBasic(Customizer.withDefaults())
-                .csrf(csrf -> csrf.disable()) 
-                .formLogin(form -> form.disable()) // Disable form login
+                .csrf(AbstractHttpConfigurer::disable) // Disable CSRF for APIs
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/register", "/api/v1/auth/login").permitAll() // Public access for registration and login
-                        .requestMatchers("/api/v1/app/**").authenticated() // Authenticated access for item-related endpoints
-                        .anyRequest().authenticated() // All other requests require authentication
+                        //.requestMatchers("/api/v1/auth/register", "/api/v1/auth/login").permitAll() // Public endpoints
+                        //.anyRequest().authenticated() // All other endpoints require authentication
+                        .anyRequest().permitAll()
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // Stateless sessions for APIs
+                //.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class) // Add JwtRequestFilter
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // Stateless
 
         return http.build();
     }

@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.falcon.CostMate.Entity.AppUser;
 import com.falcon.CostMate.Entity.Group;
 import com.falcon.CostMate.Repositories.GroupRepository;
-import com.falcon.CostMate.Repositories.UserRepository;
+import com.falcon.CostMate.Repositories.AppUserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,18 +21,22 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class GroupService {
 	
-	private GroupRepository groupRepository;
-	private UserRepository userRepository;
+	private final GroupRepository groupRepository;
+	private final AppUserRepository userRepository;
 	
 	public List<Group> getAllGroups(){
 		return groupRepository.findAll();
 		
 	}
 	
-	public Group createGroup(AppUser adminuser) {
-		Group group = new Group();
-		group.setAdminUser(adminuser);
-		group.getGroupMembers().add(adminuser);
+	public Group createGroup(AppUser adminuser, String groupName) {
+        Optional<AppUser> admin = userRepository.findByUsername(adminuser.getUsername());
+        if(admin.isEmpty()){
+            throw new  RuntimeException("User not found");
+        }
+		Group group = new Group(groupName);
+		group.setAdminUser(admin.get());
+		group.getGroupMembers().add(admin.get());
 		return groupRepository.save(group);
 	}
 	
@@ -52,7 +56,7 @@ public class GroupService {
 	
 	public Group addUserToGroup(String id, AppUser addedUser) {
 		Optional<Group> groupOpt = groupRepository.findById(Long.parseLong(id));
-        Optional<AppUser> userOpt = userRepository.findById(addedUser.getId());
+        Optional<AppUser> userOpt = userRepository.findById(addedUser.getUid());
 
         if (groupOpt.isPresent() && userOpt.isPresent()) {
             Group group = groupOpt.get();
@@ -71,7 +75,7 @@ public class GroupService {
 	
 	public Group removeUserFromGroup(String id, AppUser addedUser) {
 		Optional<Group> groupOpt = groupRepository.findById(Long.parseLong(id));
-        Optional<AppUser> userOpt = userRepository.findById(addedUser.getId());
+        Optional<AppUser> userOpt = userRepository.findById(addedUser.getUid());
 
         if (groupOpt.isPresent() && userOpt.isPresent()) {
             Group group = groupOpt.get();
@@ -100,7 +104,7 @@ public class GroupService {
 	
 	public Group joinToGroup(String id, AppUser requestedUser) {
 		Optional<Group> groupOpt = groupRepository.findById(Long.parseLong(id));
-        Optional<AppUser> userOpt = userRepository.findById(requestedUser.getId());
+        Optional<AppUser> userOpt = userRepository.findById(requestedUser.getUid());
 
         if (groupOpt.isPresent() && userOpt.isPresent()) {
             Group group = groupOpt.get();
@@ -116,7 +120,7 @@ public class GroupService {
 	
 	public Group approveRequest(String id, AppUser requestedUser) {
 		Optional<Group> groupOpt = groupRepository.findById(Long.parseLong(id));
-        Optional<AppUser> userOpt = userRepository.findById(requestedUser.getId());
+        Optional<AppUser> userOpt = userRepository.findById(requestedUser.getUid());
 
         if (groupOpt.isPresent() && userOpt.isPresent()) {
             Group group = groupOpt.get();
@@ -133,7 +137,7 @@ public class GroupService {
 	
 	public Group rejectRequest(String id, AppUser requestedUser) {
 		Optional<Group> groupOpt = groupRepository.findById(Long.parseLong(id));
-        Optional<AppUser> userOpt = userRepository.findById(requestedUser.getId());
+        Optional<AppUser> userOpt = userRepository.findById(requestedUser.getUid());
 
         if (groupOpt.isPresent() && userOpt.isPresent()) {
             Group group = groupOpt.get();
@@ -150,7 +154,7 @@ public class GroupService {
 	
 	public Group quitFromGroup(String id, AppUser requestedUser) {
 		Optional<Group> groupOpt = groupRepository.findById(Long.parseLong(id));
-        Optional<AppUser> userOpt = userRepository.findById(requestedUser.getId());
+        Optional<AppUser> userOpt = userRepository.findById(requestedUser.getUid());
 
         if (groupOpt.isPresent() && userOpt.isPresent()) {
             Group group = groupOpt.get();

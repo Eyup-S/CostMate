@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 import com.falcon.CostMate.Entity.TransactionItem;
-
+import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TransactionItemRepository extends JpaRepository<TransactionItem, Long> {
