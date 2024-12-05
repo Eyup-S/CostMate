@@ -1,6 +1,6 @@
 package com.falcon.CostMate.Entity;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,8 +13,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 @Entity
@@ -28,9 +32,12 @@ public class ShopItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long sid;
 	
-	
+	@NonNull
+    @Size(min = 1, max = 100, message = "Name must be between 1 and 100 characters")
 	private String name;
 	
+    @NotNull(message = "Price cannot be null")
+    @Min(value = 0, message = "Price must be greater than or equal to 0")
 	private String amount;
 	
 	@ManyToOne
@@ -38,16 +45,17 @@ public class ShopItem {
     private ListType listName;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date  createdTime;
+	private LocalDateTime  createdTime;
 
 	@ManyToOne
     @JoinColumn(name = "createdBy", nullable = false)
     private AppUser createdBy;
 	
+	@NonNull
 	private Boolean status;
 	
     @Temporal(TemporalType.TIMESTAMP)
-	private Date boughtTime;
+	private LocalDateTime boughtTime;
 	
     @ManyToOne
     @JoinColumn(name = "boughtBy")
