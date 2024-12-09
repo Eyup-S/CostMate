@@ -3,16 +3,12 @@ package com.falcon.CostMate.Services;
 import com.falcon.CostMate.Entity.AppUser;
 import com.falcon.CostMate.Entity.TransactionItem;
 import com.falcon.CostMate.Repositories.TransactionItemRepository;
-import com.falcon.CostMate.Repositories.UserRepository;
+import com.falcon.CostMate.Repositories.AppUserRepository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +16,7 @@ public class TransactionItemService {
 
 
     private final TransactionItemRepository itemRepository;
-    private final UserRepository userRepository;
+    private final AppUserRepository userRepository;
 
     public List<TransactionItem> getItemsByCategory(String category){
         List<TransactionItem> items = itemRepository.findByCategory(category).get();
@@ -70,14 +66,14 @@ public class TransactionItemService {
             if(dbItem.isPresent()) {
             	TransactionItem updatedItem = dbItem.get();
             	updatedItem.setName(item.getName());
-            	updatedItem.setCategory(item.getCategory);
-            	updatedItem.setStatus(item.getStatus);
-            	updatedItem.setAddedBy(item.getAddedBy);
-            	updatedItem.setPaidBy(item.getPaidBy);
-            	updatedItem.setaddedDate(item.getAddedDate);
-            	updatedItem.setboughtDate(item.getBoughtDate);
-            	updatedItem.setsharedWith(item.getSharedWith);
-            	updatedItem.setPrice(item.getPrice);
+            	updatedItem.setCategory(item.getCategory());
+            	updatedItem.setStatus(item.getStatus());
+            	updatedItem.setAddedBy(item.getAddedBy());
+            	updatedItem.setPaidBy(item.getPaidBy());
+            	updatedItem.setAddedDate(item.getAddedDate());
+            	updatedItem.setBoughtDate(item.getBoughtDate());
+            	updatedItem.setSharedWith(item.getSharedWith());
+            	updatedItem.setPrice(item.getPrice());
             	return itemRepository.save(updatedItem);
             }
             else {
@@ -86,7 +82,7 @@ public class TransactionItemService {
     }
     
     public Map<String, List<TransactionItem>> getItemsGroupedByCategory(){
-    	Map<String, List<TransactionItem>> byCategory;
+    	Map<String, List<TransactionItem>> byCategory = new HashMap<>();
     	List<TransactionItem> items = itemRepository.findAll();
     	List<String> categories = new ArrayList<>();
     	
@@ -96,7 +92,7 @@ public class TransactionItemService {
      			byCategory.get(item_.getCategory()).add(item_);
      		}
      		else {
-     			byCategory.put(item_.getCategory(), new ArrayList<>(Arrays.asList(item_)));     		     			
+     			byCategory.put(item_.getCategory().getCategoryName(), new ArrayList<>(Arrays.asList(item_)));
      		}
      	});
      	
