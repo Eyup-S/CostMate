@@ -4,10 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,21 +15,23 @@ import java.util.Set;
 @Getter
 @Setter
 @Data
+@NoArgsConstructor
+@RequiredArgsConstructor
 @Table(name = "TransactionItems")
 public class TransactionItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long iid;
-    
+
     @NonNull
     @Size(min = 1, max = 100, message = "Name must be between 1 and 100 characters")
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "categoryName")
+    @JoinColumn(name = "category_id")
     private Category category;
-    
+
     @NonNull
     private Boolean status;
 
@@ -53,7 +52,7 @@ public class TransactionItem {
 
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime  boughtDate;
-    
+
     @NotNull(message = "Price cannot be null")
     @Min(value = 0, message = "Price must be greater than or equal to 0")
     private Double price;

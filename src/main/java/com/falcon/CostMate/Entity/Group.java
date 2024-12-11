@@ -3,6 +3,7 @@ package com.falcon.CostMate.Entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -29,7 +30,8 @@ public class Group {
 	    joinColumns = @JoinColumn(name = "gid"),
 	    inverseJoinColumns = @JoinColumn(name = "uid")
     )
-    private List<AppUser> groupMembers;
+	@JsonIgnore
+	private List<AppUser> groupMembers;
 	
 	@ManyToMany
     @JoinTable(
@@ -37,10 +39,12 @@ public class Group {
 	    joinColumns = @JoinColumn(name = "gid"),
 	    inverseJoinColumns = @JoinColumn(name = "uid")
     )
-    private List<AppUser> groupMembershipRequests;
+	@JsonIgnore
+	private List<AppUser> groupMembershipRequests;
 
 	@ManyToOne
 	@JoinColumn(name = "admin_user", nullable = false)
+	@JsonIgnore
 	private AppUser adminUser;
 
 	public Group() {

@@ -1,7 +1,9 @@
 package com.falcon.CostMate.Services;
 
 import com.falcon.CostMate.Entity.AppUser;
+import com.falcon.CostMate.Entity.Category;
 import com.falcon.CostMate.Entity.TransactionItem;
+import com.falcon.CostMate.Repositories.CategoryRepository;
 import com.falcon.CostMate.Repositories.TransactionItemRepository;
 import com.falcon.CostMate.Repositories.AppUserRepository;
 
@@ -17,15 +19,14 @@ public class TransactionItemService {
 
     private final TransactionItemRepository itemRepository;
     private final AppUserRepository userRepository;
+	private final CategoryRepository categoryRepository;
 
-    public List<TransactionItem> getItemsByCategory(String category){
-        List<TransactionItem> items = itemRepository.findByCategory(category).get();
-    	if(!items.isEmpty()) {
-    		return items;    		
-    	}
-    	else {
-    		throw new RuntimeException("Items not found");
-    	}
+    public List<TransactionItem> getItemsByCategory(String categoryName){
+		Category category = categoryRepository.findByName(categoryName)
+				.orElseThrow(() -> new RuntimeException("Category not found"));
+
+		List<TransactionItem> items = itemRepository.findByCategory(category).orElseThrow(() -> new RuntimeException("Items not found"));
+		return items;
     }
     
     public List<TransactionItem> getAllItems(){
@@ -42,14 +43,50 @@ public class TransactionItemService {
     		return items;
     	}
     	throw new RuntimeException("Items not found");
-    }    
-    
-    public TransactionItem addItem(TransactionItem item){
-        return itemRepository.save(item);
-        
     }
-    
-    public boolean deleteItem(Long id){
+
+	public TransactionItem addItem(TransactionItem item) {
+		if (item.getAddedBy() != null) {
+			AppUser addedBy = userRepository.findById(item.getAddedBy().getUid())
+					.orElseThrow(() -> new RuntimeException("User for 'addedBy' not found"));
+			item.setAddedBy(addedBy);
+		} else {
+			throw new RuntimeException("'addedBy' user is required");
+		}
+
+		if (item.getPaidBy() != null && !item.getPaidBy().isEmpty()) {
+			Set<AppUser> paidByUsers = new HashSet<>();
+			for (AppUser paidByUser : item.getPaidBy()) {
+				AppUser user = userRepository.findById(paidByUser.getUid())
+						.orElseThrow(() -> new RuntimeException("User in 'paidBy' not found: ID " + paidByUser.getUid()));
+				paidByUsers.add(user);
+			}
+			item.setPaidBy(paidByUsers);
+		}
+
+		if (item.getCategory() != null) {
+			Category category = categoryRepository.findById(item.getCategory().getCid())
+					.orElseThrow(() -> new RuntimeException("Category not found: ID " + item.getCategory().getCid()));
+			item.setCategory(category);
+		} else {
+			throw new RuntimeException("Category is required");
+		}
+
+		if (item.getSharedWith() != null && !item.getSharedWith().isEmpty()) {
+			List<AppUser> sharedWithUsers = new ArrayList<>();
+			for (AppUser sharedUser : item.getSharedWith()) {
+				AppUser user = userRepository.findById(sharedUser.getUid())
+						.orElseThrow(() -> new RuntimeException("User in 'sharedWith' not found: ID " + sharedUser.getUid()));
+				sharedWithUsers.add(user);
+			}
+			item.setSharedWith(sharedWithUsers);
+		}
+
+		return itemRepository.save(item);
+	}
+
+
+	public boolean deleteItem(Long id){
     	try {
     		itemRepository.deleteById(id);
     		return true;
@@ -92,7 +129,7 @@ public class TransactionItemService {
      			byCategory.get(item_.getCategory()).add(item_);
      		}
      		else {
-     			byCategory.put(item_.getCategory().getCategoryName(), new ArrayList<>(Arrays.asList(item_)));
+     			byCategory.put(item_.getCategory().getName(), new ArrayList<>(Arrays.asList(item_)));
      		}
      	});
      	

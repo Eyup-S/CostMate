@@ -1,5 +1,6 @@
 package com.falcon.CostMate.Controllers;
 
+import com.falcon.CostMate.Repositories.AppUserRepository;
 import com.falcon.CostMate.Services.LoginService;
 //import com.falcon.CostMate.utils.JwtUtil;
 
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.falcon.CostMate.Entity.AppUser;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
@@ -21,6 +24,7 @@ public class LoginController {
     @Autowired
     private final LoginService loginService;
     //private JwtUtil jwtUtil;
+    private final AppUserRepository userRepository;
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody AppUser user){
@@ -51,6 +55,11 @@ public class LoginController {
         }
         return ResponseEntity.ok("Valid token");
 
+    }
+
+    @GetMapping("/users")
+    public List<AppUser> getAllUsers(){
+        return userRepository.findAll();
     }
 
 }

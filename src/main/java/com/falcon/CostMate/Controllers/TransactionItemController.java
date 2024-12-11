@@ -1,7 +1,10 @@
 package com.falcon.CostMate.Controllers;
 
 
+import com.falcon.CostMate.Entity.Category;
 import com.falcon.CostMate.Entity.TransactionItem;
+import com.falcon.CostMate.Repositories.CategoryRepository;
+import com.falcon.CostMate.Repositories.TransactionItemRepository;
 import com.falcon.CostMate.Services.TransactionItemService;
 
 import jakarta.validation.Valid;
@@ -19,6 +22,7 @@ import java.util.Map;
 public class TransactionItemController {
 
     private final TransactionItemService itemService;
+
     
     @GetMapping("/items")
     public ResponseEntity<List<TransactionItem>> getAllItems(){
@@ -28,18 +32,16 @@ public class TransactionItemController {
     	catch(Exception e) {
     		return ResponseEntity.noContent().build();
     	}
-    	
+
     }
 
     @GetMapping("/items/{category}")
-    public ResponseEntity<List<TransactionItem>> getItemsByCategory(@PathVariable String category){
-    	try {
-    		return ResponseEntity.ok(itemService.getItemsByCategory(category));
-    	}
-    	catch(Exception e) {
-    		return ResponseEntity.noContent().build();
-    	}
-        
+    public ResponseEntity<List<TransactionItem>> getItemsByCategory(@PathVariable String categoryName){
+        List<TransactionItem> items = itemService.getItemsByCategory(categoryName);
+        if(!items.isEmpty()){
+            return ResponseEntity.ok(items);
+        }
+        return ResponseEntity.noContent().build();
     }
     
     @GetMapping("/items/years/{year}/months/{month}")
