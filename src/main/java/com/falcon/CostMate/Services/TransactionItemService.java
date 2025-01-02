@@ -47,7 +47,7 @@ public class TransactionItemService {
 
 	public TransactionItem addItem(TransactionItem item) {
 		if (item.getAddedBy() != null) {
-			AppUser addedBy = userRepository.findById(item.getAddedBy().getUid())
+			AppUser addedBy = userRepository.findByUsername(item.getAddedBy().getUsername())
 					.orElseThrow(() -> new RuntimeException("User for 'addedBy' not found"));
 			item.setAddedBy(addedBy);
 		} else {

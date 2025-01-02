@@ -33,6 +33,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
         @NotNull
         @NotEmpty
+        @JsonIgnore
         private String password;
 
         @OneToMany(mappedBy = "addedBy", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -44,10 +45,12 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
         private List<TransactionItem> paidItems;
 
         @ElementCollection(fetch = FetchType.EAGER)
+        @JsonIgnore
         private List<String> roles = new ArrayList<>();
 
 
         @Override
+        @JsonIgnore
         public Collection<? extends GrantedAuthority> getAuthorities() {
             return roles.stream()
                     .map(SimpleGrantedAuthority::new)
@@ -56,21 +59,25 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 
         @Override
+        @JsonIgnore
         public boolean isAccountNonExpired() {
             return true; // Modify if you want to track account expiration
         }
 
         @Override
+        @JsonIgnore
         public boolean isAccountNonLocked() {
             return true; // Modify if you want to track account locking
         }
 
         @Override
+        @JsonIgnore
         public boolean isCredentialsNonExpired() {
             return true; // Modify if you want to track credential expiration
         }
 
         @Override
+        @JsonIgnore
         public boolean isEnabled() {
             return true; // Modify if you want to track whether the user is enabled
         }

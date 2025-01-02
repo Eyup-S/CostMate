@@ -2,6 +2,7 @@ package com.falcon.CostMate.Services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -166,6 +167,18 @@ public class GroupService {
         }
         throw new RuntimeException("Request or group not found");
 	}
-	
+
+    public boolean isUserPresentInGroup(String groupId, AppUser user){
+
+        AtomicBoolean found = new AtomicBoolean(false);
+        groupRepository.findById(Long.parseLong(groupId)).ifPresent(group_ -> group_.getGroupMembers().forEach((userOfGroup) -> {
+            if (user.getUsername().contentEquals(userOfGroup.getUsername())) {
+                found.set(true);
+            } else {
+                found.set(false);
+            }
+        }));
+        return found.get();
+    }
 	
 }

@@ -3,6 +3,7 @@ package com.falcon.CostMate.Controllers;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,12 +37,12 @@ class GroupController{
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<Optional<Group>> getGroupById(@PathVariable("id") String id){
+	public ResponseEntity<Group> getGroupById(@PathVariable("id") String id){
 		Optional<Group> group = groupService.getGroupByID(id);
 		if(group.isEmpty()) {
 			return ResponseEntity.noContent().build();
 		}
-		return ResponseEntity.ok(group);
+		return ResponseEntity.ok(group.get());
 	}
 	
 	@GetMapping("/{id}/users")
@@ -126,6 +127,24 @@ class GroupController{
 		}
 		catch(Exception e) {
 			return ResponseEntity.noContent().build();			
+		}
+	}
+
+	@PostMapping("{id}/users/isPresent")
+	public ResponseEntity<?> isUserPresentInGroup(@PathVariable("id") String id, @RequestBody AppUser user){
+		System.out.println("Incoming user: " + user);
+		try {
+			if(groupService.isUserPresentInGroup(id, user)){
+				System.out.println("User is present");
+				return ResponseEntity.ok().build();
+			}
+			else {
+				System.out.println("User is not present");
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+			}
+		}
+		catch (Exception e){
+			return ResponseEntity.internalServerError().build();
 		}
 	}
 	

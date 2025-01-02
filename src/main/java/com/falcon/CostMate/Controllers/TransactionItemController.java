@@ -56,6 +56,7 @@ public class TransactionItemController {
 
     @PostMapping("/items")
     public ResponseEntity<TransactionItem> addItem(@Valid @RequestBody TransactionItem item){
+        System.out.println("📝 Incoming TransactionItem: " + item);
         return ResponseEntity.ok(itemService.addItem(item));
     }
     
