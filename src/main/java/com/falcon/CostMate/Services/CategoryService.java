@@ -25,5 +25,25 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
+    // Get a category by ID
+    public Category getCategoryById(Long cid) {
+        return categoryRepository.findById(cid)
+                .orElseThrow(() -> new RuntimeException("Category not found: ID " + cid));
+    }
+    // Update a category
+    public Category updateCategory(Long cid, Category updatedCategory) {
+        Category existingCategory = categoryRepository.findById(cid)
+                .orElseThrow(() -> new RuntimeException("Category not found: ID " + cid));
+
+        existingCategory.setName(updatedCategory.getName());
+        return categoryRepository.save(existingCategory);
+    }
+    // Delete a category
+    public void deleteCategory(Long cid) {
+        Category category = categoryRepository.findById(cid)
+                .orElseThrow(() -> new RuntimeException("Category not found: ID " + cid));
+        categoryRepository.delete(category);
+    }
+
     // Additional business logic can be added here (e.g., filtering categories)
 }
