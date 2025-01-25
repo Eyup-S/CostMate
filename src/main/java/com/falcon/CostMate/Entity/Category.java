@@ -34,4 +34,8 @@ public class Category {
         this.cid = cid;
         this.name = name;
     }
+
+    public Category(String name) {
+        this.name = name;
+    }
 }
