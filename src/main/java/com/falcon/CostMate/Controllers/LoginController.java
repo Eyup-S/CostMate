@@ -17,7 +17,7 @@ import com.falcon.CostMate.Entity.AppUser;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class LoginController {
 
@@ -26,19 +26,19 @@ public class LoginController {
     //private JwtUtil jwtUtil;
     private final AppUserRepository userRepository;
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<String> login(@RequestBody AppUser user){
         System.out.println("user " + user.getUsername() + " " + user.getPassword());
         return loginService.login(user);
     }
 
-    @PostMapping("/register")
+    @PostMapping("/auth/register")
     public ResponseEntity<String> register(@RequestBody AppUser user){
 
         return loginService.register(user);
     }
     
-    @PostMapping("/validate-token")
+    @PostMapping("/auth/validate-token")
     public ResponseEntity<String> validateToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @RequestBody AppUser user){
     	try {
             token = token.substring(7); // Remove "Bearer " prefix
@@ -57,9 +57,11 @@ public class LoginController {
 
     }
 
-    @GetMapping("/users")
-    public List<AppUser> getAllUsers(){
-        return userRepository.findAll();
+
+    @GetMapping("/users/{username}")
+    public ResponseEntity<AppUser> getUserByName(@PathVariable("username") String username){
+        AppUser user = loginService.loadUserByUsername(username);
+        return ResponseEntity.ok(user);
     }
 
 }

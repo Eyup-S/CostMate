@@ -25,8 +25,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long uid;
 
-        @Getter
-        @Setter
         @NotNull
         @NotEmpty
         private String username;
@@ -40,9 +38,13 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
         @JsonIgnore
         private List<TransactionItem> addedItems;
 
-        @ManyToMany(mappedBy = "paidBy", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+        @ManyToMany(mappedBy = "groupMembers")
         @JsonIgnore
-        private List<TransactionItem> paidItems;
+        private List<Group> joinedGroups = new ArrayList<>();
+
+        @OneToMany(mappedBy = "user")
+        @JsonIgnore
+        private List<Balances> balances = new ArrayList<>();
 
         @ElementCollection(fetch = FetchType.EAGER)
         @JsonIgnore
@@ -91,6 +93,5 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
         public String getPassword() {
             return password;
         }
-
 
     }

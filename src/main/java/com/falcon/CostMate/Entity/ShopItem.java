@@ -13,6 +13,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,14 +29,11 @@ public class ShopItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long sid;
 	
-	
+	@NotNull
 	private String name;
 	
-	private String amount;
-	
-	@ManyToOne
-    @JoinColumn(name = "listName", nullable = false)
-    private ListType listName;
+	private String description;
+
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date  createdTime;

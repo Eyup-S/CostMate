@@ -45,6 +45,7 @@ public class LoginService implements UserDetailsService {
         System.out.println("User being saved: " + user);
 
         userRepository.save(user);
+
         return new ResponseEntity<>("Registration successful!", HttpStatus.OK);
     }
 

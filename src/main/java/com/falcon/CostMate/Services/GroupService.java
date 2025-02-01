@@ -36,7 +36,6 @@ public class GroupService {
             throw new  RuntimeException("User not found");
         }
 		Group group = new Group(groupName);
-		group.setAdminUser(admin.get());
 		group.getGroupMembers().add(admin.get());
 		return groupRepository.save(group);
 	}

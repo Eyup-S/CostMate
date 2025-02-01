@@ -2,6 +2,7 @@ package com.falcon.CostMate.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NonNull;
@@ -20,7 +21,7 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cid;
 
-    @NonNull
+    @NotNull
     private String name;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

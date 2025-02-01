@@ -19,4 +19,6 @@ public interface TransactionItemRepository extends JpaRepository<TransactionItem
 	@Query("SELECT t FROM TransactionItem t WHERE FUNCTION('MONTH', t.addedDate) = :month AND FUNCTION('YEAR', t.addedDate) = :year")
     List<TransactionItem> findByMonthAndYear(int month, int year);
 
+	List<TransactionItem> findByGroup_Gid(Long groupId);
+
 }
