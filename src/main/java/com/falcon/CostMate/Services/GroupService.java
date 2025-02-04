@@ -179,5 +179,11 @@ public class GroupService {
         }));
         return found.get();
     }
+
+    public List<Group> getGroupsOfUser(Long userID){
+        AppUser user = userRepository.findById(userID).get();
+        List<Group> groups = groupRepository.findGroupsByUserId(user.getUid());
+        return groups;
+    }
 	
 }

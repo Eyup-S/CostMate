@@ -147,6 +147,15 @@ class GroupController{
 			return ResponseEntity.internalServerError().build();
 		}
 	}
+
+	@GetMapping("groupsOfUser/{userID}")
+	public ResponseEntity<List<Group>> getGroupsOfUser(@PathVariable("userID") Long userId){
+		try{
+			return ResponseEntity.ok(groupService.getGroupsOfUser(userId));
+		} catch (Exception e) {
+			return ResponseEntity.noContent().build();
+		}
+	}
 	
 	
 	

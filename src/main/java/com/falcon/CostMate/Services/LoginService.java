@@ -1,5 +1,6 @@
 package com.falcon.CostMate.Services;
 
+import com.falcon.CostMate.DTO.AppUserDTO;
 import com.falcon.CostMate.Entity.AppUser;
 import com.falcon.CostMate.Repositories.AppUserRepository;
 //import com.falcon.CostMate.utils.JwtUtil;
@@ -50,20 +51,20 @@ public class LoginService implements UserDetailsService {
     }
 
 
-    public ResponseEntity<String> login(AppUser user) {
+    public AppUser login(AppUserDTO user) throws Exception {
         Optional<AppUser> optionalUser = userRepository.findByUsername(user.getUsername());
         if (optionalUser.isEmpty()) {
-            return new ResponseEntity<>("User Not Found!", HttpStatus.NOT_FOUND);
+            throw new Exception("User Not Found!");
         }
 
         AppUser dbUser = optionalUser.get();
         if (!passwordEncoder.matches(user.getPassword(), dbUser.getPassword())) {
-            return new ResponseEntity<>("Wrong password!", HttpStatus.UNAUTHORIZED);
+            throw new Exception("Wrong password!");
         }
 
         //String token = jwtUtil.generateToken(dbUser.getUsername());
         //return ResponseEntity.ok().body(token);
-        return ResponseEntity.ok().body(user.getUsername());
+        return optionalUser.get();
     }
 
     // UserDetailsService Implementation for Spring Security
