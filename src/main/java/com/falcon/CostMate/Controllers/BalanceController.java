@@ -11,16 +11,23 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1")
 public class BalanceController {
     private final BalanceService balanceService;
 
-    @GetMapping("/balances/{groupID}/")
-    public ResponseEntity<Balances> getBalanceofGroup(@PathVariable("groupID") String groupID){
-        Balances balance = new Balances();
-        return ResponseEntity.ok(balance);
+    @GetMapping("/balances/{groupID}")
+    public ResponseEntity<List<Balances>> getBalanceOfGroup(@PathVariable("groupID") String groupID){
+        try{
+            List<Balances> balance = balanceService.getBalanceOfGroup(groupID);
+            return ResponseEntity.ok(balance);
+        }
+        catch (Exception e) {
+            return ResponseEntity.noContent().build();
+        }
     }
 
     @GetMapping("/balances/users/{userId}")

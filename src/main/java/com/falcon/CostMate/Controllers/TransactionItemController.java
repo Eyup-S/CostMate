@@ -74,13 +74,17 @@ public class TransactionItemController {
         }
     }
     
-    @DeleteMapping("/items/{id}")
-    public ResponseEntity<Long> deleteTransactionItem(@PathVariable Long id) {
-        if(itemService.deleteItem(id)) {
-        	return ResponseEntity.ok(id);
-        }
-        else {
-        	return ResponseEntity.notFound().build();
+    @DeleteMapping("/items/groups/{groupId}/{itemId}")
+    public ResponseEntity<Boolean> deleteTransactionItem(@PathVariable("groupId") Long groupId, @PathVariable("itemId") Long itemId) {
+        try {
+            if (itemService.deleteItem( itemId, groupId)) {
+                System.out.println("item deleted: " + itemId);
+                return ResponseEntity.ok(Boolean.TRUE);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
         }
     }
     

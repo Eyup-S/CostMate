@@ -1,10 +1,7 @@
 package com.falcon.CostMate.Services;
 
 import com.falcon.CostMate.Entity.*;
-import com.falcon.CostMate.Repositories.BalanceRepository;
-import com.falcon.CostMate.Repositories.CategoryRepository;
-import com.falcon.CostMate.Repositories.TransactionItemRepository;
-import com.falcon.CostMate.Repositories.AppUserRepository;
+import com.falcon.CostMate.Repositories.*;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +17,7 @@ public class TransactionItemService {
     private final AppUserRepository userRepository;
 	private final CategoryRepository categoryRepository;
 	private final BalanceRepository balanceRepository;
+	private final SharesRepository sharesRepository;
 
     public List<TransactionItem> getItemsByCategory(String categoryName){
 		Category category = categoryRepository.findByName(categoryName)
@@ -84,16 +82,21 @@ public class TransactionItemService {
 	}
 
 
-	public boolean deleteItem(Long id){
+	public boolean deleteItem(Long itemId, Long groupId) throws Exception{
     	try {
-    		itemRepository.deleteById(id);
+			System.out.println("item id: " + itemId);
+			Optional<TransactionItem> item = itemRepository.findById(itemId);
+			if(item.isPresent()){
+				itemRepository.delete(item.get());
+			}
+			else{
+				throw new Exception("item not found");
+			}
     		return true;
     	}
     	catch(IllegalArgumentException e) {
     		throw new RuntimeException("Id is not valid.");
     	}
-    	
-    	
     }
     
     public TransactionItem updateItem(Long id,TransactionItem item){

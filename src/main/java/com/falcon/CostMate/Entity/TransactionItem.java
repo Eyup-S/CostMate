@@ -9,7 +9,6 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 
 @Entity
@@ -31,7 +30,7 @@ public class TransactionItem {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "groupID")
     private Group group;
 
@@ -49,7 +48,7 @@ public class TransactionItem {
     @Min(value = 0, message = "Price must be greater than or equal to 0")
     private Double price;
 
-    @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Shares> shares = new ArrayList<>();
 
     /*

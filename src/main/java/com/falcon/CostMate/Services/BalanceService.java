@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.*;
+
 
 @RequiredArgsConstructor
 @Service
@@ -29,5 +31,11 @@ public class BalanceService {
             }
         }
         return balance.get();
+    }
+
+    public List<Balances> getBalanceOfGroup(String groupId){
+        List<Balances> balances = balanceRepository.findByGroup_Gid(Long.parseLong(groupId));
+
+        return balances;
     }
 }
