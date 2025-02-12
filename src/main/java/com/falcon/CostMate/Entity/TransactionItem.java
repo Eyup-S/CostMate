@@ -51,6 +51,10 @@ public class TransactionItem {
     @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Shares> shares = new ArrayList<>();
 
+    @ManyToOne
+    @JoinColumn(name = "user_added_category_id")
+    private UserAddedCategory userAddedCategory;
+
     /*
     @ManyToMany
     @JoinTable(
