@@ -48,6 +48,10 @@ public class Group {
 	@JsonIgnore
 	private List<TransactionItem> transactions = new ArrayList<>();
 
+	@OneToMany(mappedBy = "categoryGroup", cascade = CascadeType.ALL)
+	@JsonIgnore
+	private List<UserAddedCategory> userAddedCategories = new ArrayList<>();
+
 
 	public Group() {
 
@@ -60,5 +64,8 @@ public class Group {
 		this.groupName = groupName;
 	}
 
+	public boolean isMember(AppUser user) {
+		return groupMembers.contains(user);
+	}
 
 }
