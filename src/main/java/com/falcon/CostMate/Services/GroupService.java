@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.falcon.CostMate.Entity.Balances;
+import com.falcon.CostMate.Repositories.BalanceRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +26,9 @@ public class GroupService {
 	
 	private final GroupRepository groupRepository;
 	private final AppUserRepository userRepository;
-	
-	public List<Group> getAllGroups(){
+    private final BalanceRepository balanceRepository;
+
+    public List<Group> getAllGroups(){
 		return groupRepository.findAll();
 		
 	}
@@ -37,7 +40,14 @@ public class GroupService {
         }
 		Group group = new Group(groupName);
 		group.getGroupMembers().add(admin.get());
-		return groupRepository.save(group);
+        groupRepository.save(group);
+        Balances balance = new Balances();
+        balance.setOwedAmount(0.00);
+        balance.setPaidAmount(0.00);
+        balance.setGroup(group);
+        balance.setUser(adminuser);
+        balanceRepository.save(balance);
+        return group;
 	}
 	
 	public Optional<Group> getGroupByID(String id) {

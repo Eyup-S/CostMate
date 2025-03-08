@@ -3,7 +3,6 @@ package com.falcon.CostMate.Controllers;
 
 import com.falcon.CostMate.Entity.Balances;
 import com.falcon.CostMate.Services.BalanceService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,9 +30,18 @@ public class BalanceController {
     }
 
     @GetMapping("/balances/users/{userId}")
-    public ResponseEntity<Balances> getBalanceOfUser(@PathVariable("userId") Long userId){
+    public ResponseEntity<List<Balances>> getBalancesOfUser(@PathVariable("userId") Long userId){
         try{
-            return ResponseEntity.ok(balanceService.getBalanceOfUser(userId));
+            return ResponseEntity.ok(balanceService.getBalancesOfUser(userId));
+        } catch (Exception e) {
+            return ResponseEntity.noContent().build();
+        }
+    }
+
+    @GetMapping("/balances/users/{userId}/groups/{groupId}")
+    public ResponseEntity<Balances> getBalanceOfUser(@PathVariable("userId") Long userId, @PathVariable("groupId") Long groupId){
+        try{
+            return ResponseEntity.ok(balanceService.getBalanceOfUser(userId, groupId));
         } catch (Exception e) {
             return ResponseEntity.noContent().build();
         }

@@ -56,10 +56,13 @@ public class TransactionItemController {
 
     @PostMapping("/items")
     public ResponseEntity<TransactionItem> addItem(@Valid @RequestBody TransactionItem item){
+        System.out.println("📝 Incoming TransactionItem: " + item);
         try {
-            System.out.println("📝 Incoming TransactionItem: " + item);
-            return ResponseEntity.ok(itemService.addItem(item));
+            TransactionItem itemSaved = itemService.addItem(item);
+            System.out.println("TransactionItem saved " + itemSaved.getName());
+            return ResponseEntity.ok(itemSaved);
         } catch (Exception e) {
+            System.out.println("TransactionItem could not be saved " + e);
             return ResponseEntity.noContent().build();
         }
     }
@@ -81,9 +84,11 @@ public class TransactionItemController {
                 System.out.println("item deleted: " + itemId);
                 return ResponseEntity.ok(Boolean.TRUE);
             } else {
+                System.out.println("item not deleted: " + itemId);
                 return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
+            System.out.println(e + " -> item not found: " + itemId);
             return ResponseEntity.notFound().build();
         }
     }

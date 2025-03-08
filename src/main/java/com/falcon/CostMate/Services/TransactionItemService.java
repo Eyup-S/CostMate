@@ -44,39 +44,42 @@ public class TransactionItemService {
     }
 
 	public TransactionItem addItem(TransactionItem item) throws Exception {
-		List<Balances> balances = new ArrayList<>();
 		if (item.getAddedBy() != null) {
-			AppUser addedBy = userRepository.findByUsername(item.getAddedBy().getUsername())
-					.orElseThrow(() -> new RuntimeException("User for 'addedBy' not found"));
-			item.setAddedBy(addedBy);
+			Optional<AppUser> addedBy = userRepository.findById(item.getAddedBy().getUid());
+			if(addedBy.isPresent())
+				item.setAddedBy(addedBy.get());
+			else {
+				throw new Exception("addedby not found in db");
+			}
 		} else {
 			throw new RuntimeException("'addedBy' user is required");
 		}
+		try {
+			for (Shares share : item.getShares()) {
+				Balances balance;
+				Optional<AppUser> user = userRepository.findById(share.getUser().getUid());
+				if (user.isPresent()) {
+					try{
+						balance = balanceRepository.findByUser_UidAndGroup_Gid(user.get().getUid(),item.getGroup().getGid());
+					} catch (Exception e) {
+						balance = new Balances();
+						balance.setUser(user.get());
+					}
+					balance.setPaidAmount(balance.getPaidAmount() + share.getPaidAmount());
+					balance.setOwedAmount(balance.getOwedAmount() + share.getOwedAmount());
+					share.setTransaction(item);
 
-		for(Shares share: item.getShares()){
-			Balances balance;
-			Optional<AppUser> user = userRepository.findById(share.getUser().getUid());
-			if(user.isPresent()){
-				if(balanceRepository.findByUser(user.get()).isPresent()){
-					balance = balanceRepository.findByUser(user.get()).get();
+					if (item.getGroup() == null) {
+						throw new Exception("Group is null");
+					}
+					balance.setGroup(item.getGroup());
+					balanceRepository.save(balance);
+				} else {
+					throw new Exception("User Not found");
 				}
-				else {
-					balance = new Balances();
-					balance.setUser(user.get());
-				}
-				balance.setPaidAmount(balance.getPaidAmount() + share.getPaidAmount());
-				balance.setOwedAmount(balance.getOwedAmount() + share.getOwedAmount());
-				share.setTransaction(item);
-
-				if(item.getGroup() == null){
-					throw new Exception("Group is null");
-				}
-				balance.setGroup(item.getGroup());
-				balanceRepository.save(balance);
 			}
-			else {
-				throw new Exception("User Not found");
-			}
+		} catch (Exception e) {
+			throw new Exception(e);
 		}
 		return itemRepository.save(item);
 	}
@@ -85,9 +88,19 @@ public class TransactionItemService {
 	public boolean deleteItem(Long itemId, Long groupId) throws Exception{
     	try {
 			System.out.println("item id: " + itemId);
-			Optional<TransactionItem> item = itemRepository.findById(itemId);
+			Optional<TransactionItem> item = itemRepository.findByIdWithShares(itemId);
 			if(item.isPresent()){
+				List<Shares> shares = item.get().getShares();
+				for(Shares share: shares){
+					Balances balance = balanceRepository.findByUser_UidAndGroup_Gid(share.getUser().getUid(), groupId);
+
+					balance.setPaidAmount(balance.getPaidAmount() - share.getPaidAmount());
+					balance.setOwedAmount(balance.getOwedAmount() - share.getOwedAmount());
+					balanceRepository.save(balance);
+					sharesRepository.delete(share);
+				}
 				itemRepository.delete(item.get());
+				System.out.println("item deleted: " + itemId);
 			}
 			else{
 				throw new Exception("item not found");
