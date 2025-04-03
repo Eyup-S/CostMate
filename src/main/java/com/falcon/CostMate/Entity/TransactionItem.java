@@ -55,22 +55,6 @@ public class TransactionItem {
     @JoinColumn(name = "user_added_category_id")
     private UserAddedCategory userAddedCategory;
 
-    /*
-    @ManyToMany
-    @JoinTable(
-        name = "item_paid_by",
-        joinColumns = @JoinColumn(name = "iid"),
-        inverseJoinColumns = @JoinColumn(name = "uid")
-    )
-    @NotNull(message = "User who paid the price cannot be null")
-    private Set<AppUser> paidBy;ß
-    @ManyToMany
-    @JoinTable(
-	    name = "item_shared_with",
-	    joinColumns = @JoinColumn(name = "iid"),
-	    inverseJoinColumns = @JoinColumn(name = "uid")
-    )
-    @NotNull(message = "Shared users cannot be null")
-    private List<AppUser> sharedWith;*/
+    private Boolean isMoneyTransfer;
 
 }

@@ -1,11 +1,13 @@
 package com.falcon.CostMate.Services;
 
+import com.falcon.CostMate.DTO.MoneyTransferModel;
 import com.falcon.CostMate.Entity.*;
 import com.falcon.CostMate.Repositories.*;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -18,6 +20,7 @@ public class TransactionItemService {
 	private final CategoryRepository categoryRepository;
 	private final BalanceRepository balanceRepository;
 	private final SharesRepository sharesRepository;
+	private final GroupRepository groupRepository;
 
     public List<TransactionItem> getItemsByCategory(String categoryName){
 		Category category = categoryRepository.findByName(categoryName)
@@ -135,5 +138,55 @@ public class TransactionItemService {
 		return itemRepository.findByGroup_Gid(groupId);
 	}
 
+	public TransactionItem sendMoney(Long groupId, MoneyTransferModel moneyTransfer) throws Exception {
+		TransactionItem newItem = new TransactionItem();
+		Optional<Group> group = groupRepository.findById(groupId);
+		if(group.isEmpty()){
+			throw new Exception("Group not found");
+		}
+		newItem.setGroup(group.get());
+		newItem.setPrice(moneyTransfer.getAmount());
+		Optional<AppUser> sender = userRepository.findById(moneyTransfer.getSenderId());
+		Optional<AppUser> receiver = userRepository.findById(moneyTransfer.getReceiverId());
+
+		if(sender.isEmpty() || receiver.isEmpty()){
+			throw new Exception("User not found");
+		}
+		newItem.setName(sender.get().getUsername() + "->" + receiver.get().getUsername());
+
+		Shares senderShare = new Shares();
+		senderShare.setUser(sender.get());
+		senderShare.setPaidAmount(moneyTransfer.getAmount());
+		senderShare.setOwedAmount(0.00);
+		senderShare.setTransaction(newItem);
+
+		Shares receiverShare = new Shares();
+		receiverShare.setUser(receiver.get());
+		receiverShare.setPaidAmount(0.00);
+		receiverShare.setOwedAmount(moneyTransfer.getAmount());
+		receiverShare.setTransaction(newItem);
+
+		Balances senderBalance = balanceRepository.findByUser_UidAndGroup_Gid(sender.get().getUid(),groupId);
+		Balances receiverBalance = balanceRepository.findByUser_UidAndGroup_Gid(receiver.get().getUid(),groupId);
+
+		senderBalance.setPaidAmount(senderBalance.getPaidAmount() + moneyTransfer.getAmount());
+		receiverBalance.setOwedAmount(receiverBalance.getOwedAmount() + moneyTransfer.getAmount());
+
+		balanceRepository.save(senderBalance);
+		balanceRepository.save(receiverBalance);
+
+		newItem.setIsMoneyTransfer(true);
+		newItem.getShares().add(senderShare);
+		newItem.getShares().add(receiverShare);
+
+		newItem.setAddedDate(LocalDateTime.now());
+		newItem.setBoughtDate(LocalDateTime.now());
+		//newItem.setAddedBy(sender.get()); // not sure whether to add
+		long cat_id = 9999;
+		Optional<Category> category = categoryRepository.findById(cat_id);
+		newItem.setCategory(category.get());
+		return itemRepository.save(newItem);
+
+	}
 
 }

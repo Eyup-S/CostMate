@@ -34,6 +34,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
         @JsonIgnore
         private String password;
 
+        private Integer icon;
+
         @OneToMany(mappedBy = "addedBy", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
         @JsonIgnore
         private List<TransactionItem> addedItems;

@@ -1,14 +1,12 @@
 package com.falcon.CostMate.Controllers;
 
 
+import com.falcon.CostMate.DTO.MoneyTransferModel;
 import com.falcon.CostMate.Entity.Balances;
 import com.falcon.CostMate.Services.BalanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -46,7 +44,4 @@ public class BalanceController {
             return ResponseEntity.noContent().build();
         }
     }
-
-
-
 }

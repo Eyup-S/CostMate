@@ -30,8 +30,6 @@ public class LoginController {
     @PostMapping("/auth/login")
     public ResponseEntity<AppUser> login(@RequestBody AppUserDTO user){
         try{
-            System.out.println("user " + user.getUsername() + " " + user.getPassword());
-
             return ResponseEntity.ok(loginService.login(user));
         } catch (Exception e) {
             return ResponseEntity.noContent().build();
@@ -40,9 +38,13 @@ public class LoginController {
     }
 
     @PostMapping("/auth/register")
-    public ResponseEntity<String> register(@RequestBody AppUser user){
-
-        return loginService.register(user);
+    public ResponseEntity<AppUser> register(@RequestBody AppUserDTO user){
+        try{
+            return ResponseEntity.ok(loginService.register(user));
+        } catch (Exception e) {
+            System.out.println("error: " + e.getMessage());
+            return ResponseEntity.noContent().build();
+        }
     }
     
     @PostMapping("/auth/validate-token")
