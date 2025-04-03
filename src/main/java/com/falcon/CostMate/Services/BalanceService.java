@@ -1,5 +1,6 @@
 package com.falcon.CostMate.Services;
 
+import com.falcon.CostMate.DTO.MoneyTransferModel;
 import com.falcon.CostMate.Entity.AppUser;
 import com.falcon.CostMate.Entity.Balances;
 import com.falcon.CostMate.Entity.Group;

@@ -1,6 +1,7 @@
 package com.falcon.CostMate.Controllers;
 
 
+import com.falcon.CostMate.DTO.MoneyTransferModel;
 import com.falcon.CostMate.Entity.Category;
 import com.falcon.CostMate.Entity.TransactionItem;
 import com.falcon.CostMate.Repositories.CategoryRepository;
@@ -105,7 +106,14 @@ public class TransactionItemController {
         }
 
     }
-    
-    
+
+    @PostMapping("/groups/{groupId}/sendMoney")
+    public ResponseEntity<Boolean> sendMoney(@PathVariable("groupId") Long groupId, @RequestBody MoneyTransferModel moneyTransfer){
+        try{
+            return ResponseEntity.ok(itemService.sendMoney(groupId, moneyTransfer).getIsMoneyTransfer());
+        } catch (Exception e) {
+            return ResponseEntity.noContent().build();
+        }
+    }
 
 }

@@ -7,21 +7,14 @@ import com.falcon.CostMate.Repositories.AppUserRepository;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -37,17 +30,18 @@ public class LoginService implements UserDetailsService {
     //private final JwtUtil jwtUtil;
 
     // Registration
-    public ResponseEntity<String> register(AppUser user) {
+    public AppUser register(AppUserDTO user) throws Exception{
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            return new ResponseEntity<>("Username already taken!", HttpStatus.BAD_REQUEST);
+            throw new RuntimeException("Username already taken!");
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.getRoles().add("ROLE_USER");
+        AppUser dbUser = new AppUser();
+        dbUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        dbUser.setUsername(user.getUsername());
+        dbUser.setIcon(user.getIcon());
         System.out.println("User being saved: " + user);
 
-        userRepository.save(user);
 
-        return new ResponseEntity<>("Registration successful!", HttpStatus.OK);
+        return userRepository.save(dbUser);
     }
 
 

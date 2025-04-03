@@ -9,10 +9,12 @@ public class AppUserDTO {
 
     private String username;
     private String password;
+    private Integer icon;
 
-    public AppUserDTO(String username, String password) {
+    public AppUserDTO(String username, String password, Integer icon) {
         this.username = username;
         this.password = password;
+        this.icon = icon;
     }
 
 
