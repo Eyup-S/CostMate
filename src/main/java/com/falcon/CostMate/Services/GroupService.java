@@ -139,9 +139,15 @@ public class GroupService {
             	group.getGroupMembershipRequests().remove(user);
             	group.getGroupMembers().add(user);
             }
+            Balances balance = new Balances();
+            balance.setGroup(group);
+            balance.setUser(user);
+            balance.setPaidAmount(0.00);
+            balance.setOwedAmount(0.00);
+            balanceRepository.save(balance);
             return groupRepository.save(group);
         }
-        
+
         throw new RuntimeException("Group or request not found");
 	}
 	

@@ -14,6 +14,6 @@ public interface BalanceRepository extends JpaRepository<Balances, Long> {
     Optional<Balances> findByUser(AppUser user);
     Optional<List<Balances>> findAllByUser(AppUser user);
     List<Balances> findByGroup_Gid(Long groupId);
-    Balances findByUser_UidAndGroup_Gid(Long userId, Long groupId);
+    Optional<Balances> findByUser_UidAndGroup_Gid(Long userId, Long groupId);
 
 }

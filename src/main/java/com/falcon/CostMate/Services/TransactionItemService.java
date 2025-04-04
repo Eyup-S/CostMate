@@ -59,15 +59,21 @@ public class TransactionItemService {
 		}
 		try {
 			for (Shares share : item.getShares()) {
+				Optional<Balances> balanceOpt;
 				Balances balance;
 				Optional<AppUser> user = userRepository.findById(share.getUser().getUid());
 				if (user.isPresent()) {
-					try{
-						balance = balanceRepository.findByUser_UidAndGroup_Gid(user.get().getUid(),item.getGroup().getGid());
-					} catch (Exception e) {
+					balanceOpt = balanceRepository.findByUser_UidAndGroup_Gid(user.get().getUid(),item.getGroup().getGid());
+					if(balanceOpt.isPresent())
+						balance = balanceOpt.get();
+					else{
 						balance = new Balances();
 						balance.setUser(user.get());
+						balance.setOwedAmount(0.00);
+						balance.setPaidAmount(0.00);
+						balance.setGroup(item.getGroup());
 					}
+
 					balance.setPaidAmount(balance.getPaidAmount() + share.getPaidAmount());
 					balance.setOwedAmount(balance.getOwedAmount() + share.getOwedAmount());
 					share.setTransaction(item);
@@ -95,8 +101,11 @@ public class TransactionItemService {
 			if(item.isPresent()){
 				List<Shares> shares = item.get().getShares();
 				for(Shares share: shares){
-					Balances balance = balanceRepository.findByUser_UidAndGroup_Gid(share.getUser().getUid(), groupId);
+					Optional<Balances> balanceOpt = balanceRepository.findByUser_UidAndGroup_Gid(share.getUser().getUid(), groupId);
+					if(balanceOpt.isEmpty())
+						throw new Exception("Balance not found");
 
+					Balances balance = balanceOpt.get();
 					balance.setPaidAmount(balance.getPaidAmount() - share.getPaidAmount());
 					balance.setOwedAmount(balance.getOwedAmount() - share.getOwedAmount());
 					balanceRepository.save(balance);
@@ -166,8 +175,8 @@ public class TransactionItemService {
 		receiverShare.setOwedAmount(moneyTransfer.getAmount());
 		receiverShare.setTransaction(newItem);
 
-		Balances senderBalance = balanceRepository.findByUser_UidAndGroup_Gid(sender.get().getUid(),groupId);
-		Balances receiverBalance = balanceRepository.findByUser_UidAndGroup_Gid(receiver.get().getUid(),groupId);
+		Balances senderBalance = balanceRepository.findByUser_UidAndGroup_Gid(sender.get().getUid(),groupId).get();
+		Balances receiverBalance = balanceRepository.findByUser_UidAndGroup_Gid(receiver.get().getUid(),groupId).get();
 
 		senderBalance.setPaidAmount(senderBalance.getPaidAmount() + moneyTransfer.getAmount());
 		receiverBalance.setOwedAmount(receiverBalance.getOwedAmount() + moneyTransfer.getAmount());

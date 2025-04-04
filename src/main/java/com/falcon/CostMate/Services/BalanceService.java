@@ -40,12 +40,13 @@ public class BalanceService {
     public Balances getBalanceOfUser(Long userId, Long groupId) throws Exception{
         Optional<AppUser> user = userRepository.findById(userId);
         Optional<Group> group = groupRepository.findById(groupId);
-        Balances balances = new Balances();
+        Optional<Balances> balances = Optional.of(new Balances());
         if(user.isPresent() && group.isPresent()){
             balances =  balanceRepository.findByUser_UidAndGroup_Gid(user.get().getUid(), group.get().getGid());
-            return balances;
+            if(balances.isPresent())
+            return balances.get();
         }
-        return balances;
+        return balances.get();
     }
 
     public List<Balances> getBalanceOfGroup(String groupId){
