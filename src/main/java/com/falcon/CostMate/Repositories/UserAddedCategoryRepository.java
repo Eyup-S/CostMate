@@ -13,4 +13,6 @@ public interface UserAddedCategoryRepository extends JpaRepository<UserAddedCate
     Optional<UserAddedCategory> findByName(String name);
 
     List<UserAddedCategory> findByCategoryGroup(Group group);
+
+    Optional<UserAddedCategory> findByNameAndCategoryGroup(String name, Group group);
 }

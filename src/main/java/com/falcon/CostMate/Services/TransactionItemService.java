@@ -21,13 +21,31 @@ public class TransactionItemService {
 	private final BalanceRepository balanceRepository;
 	private final SharesRepository sharesRepository;
 	private final GroupRepository groupRepository;
+	private final UserAddedCategoryRepository userAddedCategoryRepository;
 
     public List<TransactionItem> getItemsByCategory(String categoryName){
+		Optional<Category> defaultCategory = categoryRepository.findByName(categoryName);
+		System.out.println("categoryName: " + categoryName);
+		if(defaultCategory.isPresent()){
+			System.out.println("defaultCat");
+			return itemRepository.findByCategory(defaultCategory.get()).orElseThrow(() -> new RuntimeException("Items not found"));
+		}
+
+		Optional<UserAddedCategory> userAddedCategory = userAddedCategoryRepository.findByName(categoryName);
+		if(userAddedCategory.isPresent()){
+			System.out.println("userAddedCat");
+			return itemRepository.findByUserAddedCategory(userAddedCategory.get()).orElseThrow(() -> new RuntimeException("Items not found"));
+		}
+
+		throw new RuntimeException("Category not found");
+
+		/*
 		Category category = categoryRepository.findByName(categoryName)
 				.orElseThrow(() -> new RuntimeException("Category not found"));
 
 		List<TransactionItem> items = itemRepository.findByCategory(category).orElseThrow(() -> new RuntimeException("Items not found"));
 		return items;
+		 */
     }
     
     public List<TransactionItem> getAllItems(){
@@ -62,12 +80,25 @@ public class TransactionItemService {
 				Balances balance;
 				Optional<AppUser> user = userRepository.findById(share.getUser().getUid());
 				if (user.isPresent()) {
+					balance = balanceRepository.findByUser_UidAndGroup_Gid(user.get().getUid(), item.getGroup().getGid());
+					if (balance == null) {
+						balance = new Balances();
+						balance.setUser(user.get());
+						balance.setGroup(item.getGroup());
+						balance.setPaidAmount(0.00);
+						balance.setOwedAmount(0.00);
+					}
+
+					/*
+					 // Commented out because when a try-catch block is used, it gets a null balance in the try block and
+					 // doesn't go to the catch block.
 					try{
 						balance = balanceRepository.findByUser_UidAndGroup_Gid(user.get().getUid(),item.getGroup().getGid());
 					} catch (Exception e) {
 						balance = new Balances();
 						balance.setUser(user.get());
 					}
+					 */
 					balance.setPaidAmount(balance.getPaidAmount() + share.getPaidAmount());
 					balance.setOwedAmount(balance.getOwedAmount() + share.getOwedAmount());
 					share.setTransaction(item);
@@ -84,6 +115,38 @@ public class TransactionItemService {
 		} catch (Exception e) {
 			throw new Exception(e);
 		}
+		return itemRepository.save(item);
+	}
+
+	public TransactionItem addItemToShopList(TransactionItem item) throws Exception {
+		if (item.getAddedBy() != null) {
+			Optional<AppUser> addedBy = userRepository.findById(item.getAddedBy().getUid());
+			if(addedBy.isPresent())
+				item.setAddedBy(addedBy.get());
+			else {
+				throw new Exception("addedby not found in db");
+			}
+		} else {
+			throw new RuntimeException("'addedBy' user is required");
+		}
+
+		if (item.getCategory() != null) {
+			Optional<Category> category = categoryRepository.findByName(item.getCategory().getName());
+			if (category.isPresent()) {
+				item.setCategory(category.get());
+			} else {
+				Optional<UserAddedCategory> userAddedCategory = userAddedCategoryRepository.findByName(item.getCategory().getName());
+				if (userAddedCategory.isPresent()) {
+					item.setUserAddedCategory(userAddedCategory.get());
+					item.setCategory(null);
+				} else {
+					throw new Exception("Category not found in the database");
+				}
+			}
+		} else {
+			throw new RuntimeException("'Category' is required");
+		}
+		System.out.println("Saving item:" + item.getAmount() + " " + item.getName());
 		return itemRepository.save(item);
 	}
 
@@ -126,6 +189,7 @@ public class TransactionItemService {
             	updatedItem.setBoughtDate(item.getBoughtDate());
             	updatedItem.setPrice(item.getPrice());
 				updatedItem.setShares(item.getShares());
+				updatedItem.setIsBought(item.getIsBought());
             	return itemRepository.save(updatedItem);
             }
             else {

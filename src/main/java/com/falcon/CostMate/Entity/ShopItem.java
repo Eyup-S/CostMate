@@ -50,4 +50,16 @@ public class ShopItem {
     @ManyToOne
     @JoinColumn(name = "boughtBy")
     private AppUser boughtBy; // A single user can buy this item.
+
+	@ManyToOne
+	@JoinColumn(name = "category_id")
+	private Category category;
+
+	@ManyToOne
+	@JoinColumn(name = "user_added_category_id")
+	private UserAddedCategory userAddedCategory;
+
+	@ManyToOne
+	@JoinColumn(name = "groupID")
+	private Group group;
 }

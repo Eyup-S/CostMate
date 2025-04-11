@@ -67,6 +67,19 @@ public class TransactionItemController {
             return ResponseEntity.noContent().build();
         }
     }
+
+    @PostMapping("/items/shopList")
+    public ResponseEntity<TransactionItem> addItemToShopList(@Valid @RequestBody TransactionItem item){
+        System.out.println("📝 Incoming TransactionItem: " + item);
+        try {
+            TransactionItem itemSaved = itemService.addItemToShopList(item);
+            System.out.println("TransactionItem saved " + itemSaved.getName());
+            return ResponseEntity.ok(itemSaved);
+        } catch (Exception e) {
+            System.out.println("TransactionItem could not be saved " + e);
+            return ResponseEntity.noContent().build();
+        }
+    }
     
     @PutMapping("/items/{id}")
     public ResponseEntity<TransactionItem> updateTransactionItem(@PathVariable("id") Long id, @RequestBody TransactionItem transactionItem) {

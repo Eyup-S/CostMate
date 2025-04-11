@@ -31,6 +31,10 @@ public class UserAddedCategory {
     @JsonIgnore
     private List<TransactionItem> items;
 
+    @OneToMany(mappedBy = "userAddedCategory", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<ShopItem> shopItems;
+
     public UserAddedCategory() {}
 
     // All-args constructor (including cid)

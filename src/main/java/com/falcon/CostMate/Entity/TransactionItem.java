@@ -44,7 +44,7 @@ public class TransactionItem {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime  boughtDate;
 
-    @NotNull(message = "Price cannot be null")
+    //@NotNull(message = "Price cannot be null")
     @Min(value = 0, message = "Price must be greater than or equal to 0")
     private Double price;
 
@@ -56,5 +56,9 @@ public class TransactionItem {
     private UserAddedCategory userAddedCategory;
 
     private Boolean isMoneyTransfer;
+
+    private Boolean isBought;
+
+    private String amount;
 
 }

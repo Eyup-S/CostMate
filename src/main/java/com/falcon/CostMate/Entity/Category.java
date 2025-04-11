@@ -28,6 +28,10 @@ public class Category {
     @JsonIgnore
     private List<TransactionItem> items;
 
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<ShopItem> shopItems;
+
     public Category() {}
 
     // Optional: All-args constructor for convenience

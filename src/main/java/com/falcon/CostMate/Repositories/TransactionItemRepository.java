@@ -3,6 +3,7 @@ package com.falcon.CostMate.Repositories;
 import java.util.List;
 
 import com.falcon.CostMate.Entity.Category;
+import com.falcon.CostMate.Entity.UserAddedCategory;
 import jakarta.validation.constraints.NotNull;
 import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TransactionItemRepository extends JpaRepository<TransactionItem, Long> {
 	Optional<List<TransactionItem>> findByCategory(Category category);
+	Optional<List<TransactionItem>> findByUserAddedCategory(UserAddedCategory userAddedCategory);
 	
 	@Query("SELECT t FROM TransactionItem t WHERE FUNCTION('MONTH', t.addedDate) = :month AND FUNCTION('YEAR', t.addedDate) = :year")
     List<TransactionItem> findByMonthAndYear(int month, int year);
