@@ -28,10 +28,12 @@ public class TransactionItem {
 
     @ManyToOne
     @JoinColumn(name = "category_id")
+    @ToString.Exclude
     private Category category;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "groupID")
+    @ToString.Exclude
     private Group group;
 
     @ManyToOne
@@ -52,4 +54,6 @@ public class TransactionItem {
     private String amount;
 
     private Boolean isMoneyTransfer;
+
+    private Boolean isBought;
 }

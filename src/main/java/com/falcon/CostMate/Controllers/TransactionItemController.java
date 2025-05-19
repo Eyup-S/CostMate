@@ -120,7 +120,6 @@ public class TransactionItemController {
     public ResponseEntity<List<TransactionItem>> getShopItemsByGroup(@PathVariable("groupId") Long groupId){
         try{
             List<TransactionItem> items = itemService.getShopItemsByGroup(groupId);
-            System.out.println(items.toString());
             return ResponseEntity.ok(items);
         }
         catch (Exception e){

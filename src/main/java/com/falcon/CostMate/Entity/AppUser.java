@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -38,14 +39,17 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
         @OneToMany(mappedBy = "addedBy", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
         @JsonIgnore
+        @ToString.Exclude
         private List<TransactionItem> addedItems;
 
         @ManyToMany(mappedBy = "groupMembers")
         @JsonIgnore
+        @ToString.Exclude
         private List<Group> joinedGroups = new ArrayList<>();
 
         @OneToMany(mappedBy = "user")
         @JsonIgnore
+        @ToString.Exclude
         private List<Balances> balances = new ArrayList<>();
 
         @ElementCollection(fetch = FetchType.EAGER)

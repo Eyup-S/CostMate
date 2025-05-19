@@ -22,10 +22,14 @@ public interface TransactionItemRepository extends JpaRepository<TransactionItem
 	@Query("SELECT t FROM TransactionItem t WHERE FUNCTION('MONTH', t.addedDate) = :month AND FUNCTION('YEAR', t.addedDate) = :year")
     List<TransactionItem> findByMonthAndYear(int month, int year);
 
-	List<TransactionItem> findByGroup_Gid(Long groupId);
+	@Query("SELECT DISTINCT t FROM TransactionItem t WHERE t.group.gid = :groupId AND t.isBought = true")
+	List<TransactionItem> findByGroup_Gid(@Param("groupId") Long groupId);
 
 	@Query("SELECT DISTINCT t FROM TransactionItem t LEFT JOIN FETCH t.shares WHERE t.iid = :id")
 	Optional<TransactionItem> findByIdWithShares(@Param("id") Long id);
+
+	@Query("SELECT DISTINCT t FROM TransactionItem t WHERE t.group.gid = :groupId AND isBought = false")
+	List<TransactionItem> findShopItems_ByGroupGid(@Param("groupId") Long groupId);
 
 
 }

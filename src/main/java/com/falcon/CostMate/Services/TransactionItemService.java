@@ -58,6 +58,9 @@ public class TransactionItemService {
 			throw new RuntimeException("'addedBy' user is required");
 		}
 		Optional<Balances> balanceOpt;
+		if(!item.getIsBought()){
+			item.setIsBought(true);
+		}
 		try {
 			for (Shares share : item.getShares()) {
 				Balances balance;

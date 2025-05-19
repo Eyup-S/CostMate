@@ -6,10 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Data
@@ -46,6 +43,7 @@ public class Group {
 
 	@OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@ToString.Exclude
 	private List<TransactionItem> transactions = new ArrayList<>();
 
 	public Group() {
