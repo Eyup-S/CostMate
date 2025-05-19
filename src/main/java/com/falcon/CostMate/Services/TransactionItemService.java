@@ -57,9 +57,9 @@ public class TransactionItemService {
 		} else {
 			throw new RuntimeException("'addedBy' user is required");
 		}
+		Optional<Balances> balanceOpt;
 		try {
 			for (Shares share : item.getShares()) {
-				Optional<Balances> balanceOpt;
 				Balances balance;
 				Optional<AppUser> user = userRepository.findById(share.getUser().getUid());
 				if (user.isPresent()) {
@@ -197,5 +197,16 @@ public class TransactionItemService {
 		return itemRepository.save(newItem);
 
 	}
+	public List<TransactionItem> getShopItemsByGroup(Long groupId){
+		return itemRepository.findShopItems_ByGroupGid(groupId);
+	}
+
+	public TransactionItem addShopItem(TransactionItem item){
+		item.setIsBought(false);
+		return itemRepository.save(item);
+	}
+
+
+
 
 }

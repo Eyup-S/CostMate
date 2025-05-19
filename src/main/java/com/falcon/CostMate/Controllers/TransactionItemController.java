@@ -116,4 +116,26 @@ public class TransactionItemController {
         }
     }
 
+    @GetMapping("/shopList/{groupId}")
+    public ResponseEntity<List<TransactionItem>> getShopItemsByGroup(@PathVariable("groupId") Long groupId){
+        try{
+            List<TransactionItem> items = itemService.getShopItemsByGroup(groupId);
+            System.out.println(items.toString());
+            return ResponseEntity.ok(items);
+        }
+        catch (Exception e){
+            return ResponseEntity.noContent().build();
+        }
+    }
+
+    @PostMapping("/shopList")
+    public ResponseEntity<TransactionItem> addShopItemToGroup(@RequestBody TransactionItem item){
+        try{
+            return ResponseEntity.ok(itemService.addShopItem(item));
+        }
+        catch (Exception e){
+            return ResponseEntity.noContent().build();
+        }
+    }
+
 }

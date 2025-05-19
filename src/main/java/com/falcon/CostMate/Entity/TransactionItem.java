@@ -36,7 +36,7 @@ public class TransactionItem {
 
     @ManyToOne
     @JoinColumn(name = "addedBy")
-    private AppUser  addedBy;
+    private AppUser addedBy;
 
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime  addedDate;
@@ -44,17 +44,12 @@ public class TransactionItem {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime  boughtDate;
 
-    @NotNull(message = "Price cannot be null")
-    @Min(value = 0, message = "Price must be greater than or equal to 0")
     private Double price;
 
     @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Shares> shares = new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn(name = "user_added_category_id")
-    private UserAddedCategory userAddedCategory;
+    private String amount;
 
     private Boolean isMoneyTransfer;
-
 }

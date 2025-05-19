@@ -48,11 +48,6 @@ public class Group {
 	@JsonIgnore
 	private List<TransactionItem> transactions = new ArrayList<>();
 
-	@OneToMany(mappedBy = "categoryGroup", cascade = CascadeType.ALL)
-	@JsonIgnore
-	private List<UserAddedCategory> userAddedCategories = new ArrayList<>();
-
-
 	public Group() {
 
 		this.groupMembers = new ArrayList<>();
