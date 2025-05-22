@@ -46,6 +46,10 @@ public class Group {
 	@ToString.Exclude
 	private List<TransactionItem> transactions = new ArrayList<>();
 
+	@OneToOne(mappedBy = "group")
+	@JsonIgnore
+	private Category category;
+
 	public Group() {
 
 		this.groupMembers = new ArrayList<>();

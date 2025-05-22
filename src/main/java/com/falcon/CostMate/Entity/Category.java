@@ -26,6 +26,11 @@ public class Category {
     @ToString.Exclude
     private List<TransactionItem> items;
 
+    @OneToOne
+    @JoinColumn(name = "groupID", referencedColumnName = "gid")
+    @JsonIgnore
+    private Group group;
+
     public Category() {}
 
     // Optional: All-args constructor for convenience
