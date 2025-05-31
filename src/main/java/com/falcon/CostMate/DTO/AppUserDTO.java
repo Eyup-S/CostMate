@@ -16,6 +16,4 @@ public class AppUserDTO {
         this.password = password;
         this.icon = icon;
     }
-
-
 }

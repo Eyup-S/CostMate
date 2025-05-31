@@ -1,6 +1,7 @@
 package com.falcon.CostMate.Controllers;
 
 import com.falcon.CostMate.DTO.AppUserDTO;
+import com.falcon.CostMate.DTO.LoginInfo;
 import com.falcon.CostMate.Repositories.AppUserRepository;
 import com.falcon.CostMate.Services.LoginService;
 //import com.falcon.CostMate.utils.JwtUtil;
@@ -24,11 +25,10 @@ public class LoginController {
 
     @Autowired
     private final LoginService loginService;
-    //private JwtUtil jwtUtil;
     private final AppUserRepository userRepository;
 
     @PostMapping("/auth/login")
-    public ResponseEntity<AppUser> login(@RequestBody AppUserDTO user){
+    public ResponseEntity<LoginInfo> login(@RequestBody AppUserDTO user){
         try{
             return ResponseEntity.ok(loginService.login(user));
         } catch (Exception e) {

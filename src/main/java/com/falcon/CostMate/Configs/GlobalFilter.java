@@ -22,7 +22,7 @@ public class GlobalFilter implements Filter {
         String username = auth.getName();
         String roles = auth.getAuthorities().toString();
 
-        System.out.println(url + " " + username + " " + roles) ;
+        System.out.println(request.getMethod() + " " + url + " from -> " + username + " " + roles) ;
         filterChain.doFilter(request, response);
     }
 

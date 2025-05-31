@@ -1,12 +1,16 @@
 package com.falcon.CostMate.Services;
 
 import com.falcon.CostMate.DTO.AppUserDTO;
+import com.falcon.CostMate.DTO.LoginInfo;
 import com.falcon.CostMate.Entity.AppUser;
 import com.falcon.CostMate.Repositories.AppUserRepository;
-//import com.falcon.CostMate.utils.JwtUtil;
+import com.falcon.CostMate.utils.JwtTokenProvider;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -27,38 +31,35 @@ public class LoginService implements UserDetailsService {
 
     private final AppUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    //private final JwtUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
+
 
     // Registration
-    public AppUser register(AppUserDTO user) throws Exception{
-        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            throw new RuntimeException("Username already taken!");
-        }
-        AppUser dbUser = new AppUser();
-        dbUser.setPassword(passwordEncoder.encode(user.getPassword()));
-        dbUser.setUsername(user.getUsername());
-        dbUser.setIcon(user.getIcon());
-        System.out.println("User being saved: " + user);
+    public LoginInfo login(AppUserDTO dto) {
+        // Authenticate user (throws BadCredentialsException if invalid)
+        Authentication auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword())
+        );
 
+        AppUser user = (AppUser) auth.getPrincipal();
 
-        return userRepository.save(dbUser);
+        // Generate JWT token with user id
+        return new LoginInfo(user, jwtTokenProvider.generateToken(user.getUid()));
+
     }
 
-
-    public AppUser login(AppUserDTO user) throws Exception {
-        Optional<AppUser> optionalUser = userRepository.findByUsername(user.getUsername());
-        if (optionalUser.isEmpty()) {
-            throw new Exception("User Not Found!");
+    public AppUser register(AppUserDTO dto) {
+        if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
+            throw new RuntimeException("Username already taken!");
         }
 
-        AppUser dbUser = optionalUser.get();
-        if (!passwordEncoder.matches(user.getPassword(), dbUser.getPassword())) {
-            throw new Exception("Wrong password!");
-        }
+        AppUser newUser = new AppUser();
+        newUser.setUsername(dto.getUsername());
+        newUser.setPassword(passwordEncoder.encode(dto.getPassword()));
+        newUser.setIcon(dto.getIcon());
 
-        //String token = jwtUtil.generateToken(dbUser.getUsername());
-        //return ResponseEntity.ok().body(token);
-        return optionalUser.get();
+        return userRepository.save(newUser);
     }
 
     // UserDetailsService Implementation for Spring Security
